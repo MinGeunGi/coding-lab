@@ -13,6 +13,7 @@ import sqlite3
 
 
 def print_menu():
+    # 메뉴 출력
     print("학생성적 관리 프로그램")
     print('1. 학생성적 입력')
     print('2. 한 학생의 성적 출력')
@@ -23,6 +24,7 @@ def print_menu():
 
 def input_score():
     '''
+    성적 입력
     학생이름 국어, 수학, 영어 구분
 
     '''
@@ -32,6 +34,7 @@ def input_score():
     input_value = input().split(' ')
     print(input_value)
 
+    # 유효성 검사
     if len(input_value) != 5:
         print('다시 입력해주세요')
         return input_score
@@ -56,7 +59,29 @@ def show_score():
     result = cur.execute("SELECT name, korean, math, english, kind FROM score")
     score = result.fetchall()
     for data in score:
-        print('이름:', data[0],',', '국어:', data[1],',', '수학:', data[2],',', '영어:', data[3],',', 'M/F:', data[4])
+        print('이름:', data[0], ',', '국어:', data[1], ',', '수학:',
+              data[2], ',', '영어:', data[3], ',', 'M/F:', data[4])
+
+
+def average_score():  # 평균계산
+    MF = input('중간기말 입력(M : 중간 or F : 기말 or 공백 : 전체 조회 ) : ')
+    
+    con = sqlite3.connect("scoer.db")
+    cur = con.cursor()
+    
+    result = cur.execute(
+        f"SELECT name, korean, math, english, kind FROM score WHERE kind = '{MF}' ")
+    score = result.fetchall()
+    
+    for data in score:
+
+        if MF == 'M':
+            avg = (int(data[1]) + int(data[2]) + int(data[3]))/3
+            print('이름 : ', data[0], '평균 : ', avg)
+        elif MF == 'F':
+            avg = (int(data[1]) + int(data[2]) + int(data[3]))/3
+            print('이름 : ', data[0], '평균 : ', avg)
+        
 
 
 def run():  # 프로그램의 시작점
@@ -76,8 +101,11 @@ def run():  # 프로그램의 시작점
         if Exit == '2':
             print('2. 한 학생의 성적 출력 \n')
             show_score()
+
         if Exit == '3':
             print('3. 평균 보여주기 \n')
+            average_score()
+
         if Exit == '4':
             print_menu()
             print('\n\n')
